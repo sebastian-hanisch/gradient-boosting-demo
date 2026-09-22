@@ -332,7 +332,7 @@ st.markdown(
 | **Zu große Lernrate ohne genug Bremsung** | Trainingsfehler fällt schnell auf 0, der Testfehler steigt nach wenigen Runden wieder (gemessen oben). | kleinere Lernrate, Frühstopp anhand des Testfehlers |
 | **Feste Rundenzahl statt Frühstopp** | Ohne einen zurückgehaltenen Testfehler weiß man nicht, wann man aufhören sollte - zu wenige Runden unteranpassen, zu viele überanpassen (siehe Rundenkurve oben). | Testfehler laufend mitmessen, bei der besten Runde aufhören |
 | **Teilstichproben als verlässliche Regularisierung** | In diesem Datensatz ändert die Teilstichprobe den Testfehler nur uneinheitlich - verlässlich ist nur der Geschwindigkeitsgewinn (gemessen oben). | größere Datensätze, wo der Regularisierungseffekt klarer greift |
-| **Bäume sind einfache, achsenparallele Schnitte** | Wie jeder Baum in dieser Linie liefert auch Gradient Boosting eine Stufenfunktion je Baum; erst die Summe vieler Bäume nähert sich einer glatten Fläche an. | mehr Runden, größere Tiefe |
+| **Bäume sind einfache, achsenparallele Splits** | Wie jeder Baum in dieser Linie liefert auch Gradient Boosting eine Stufenfunktion je Baum; erst die Summe vieler Bäume nähert sich einer glatten Fläche an. | mehr Runden, größere Tiefe |
 """
 )
 
@@ -358,7 +358,7 @@ Update: $F_m(x) = F_{m-1}(x) + \eta \sum_j \gamma_{jm}\,\mathbb 1[x \in R_{jm}]$
 | Exponentiell (Klassifikation) | $\tilde y\,e^{-\tilde y F}$, $\tilde y=2y-1$ | $\tfrac12\ln\!\big(\sum_{\tilde y=1} e^{-F} \,/\, \sum_{\tilde y=-1} e^{F}\big)$ |
 
 Bei Tiefe 1, Lernrate 1 und exponentiellem Verlust ist der Blattwert exakt die halbe AdaBoost-Stimmgewichtsformel $\alpha_m$ - die Vorhersagen stimmen mit adaboost-demo bis auf einen Unterschied
-im Baumkern (Varianz- statt Gini-Kriterium für die Schnittsuche) weitgehend überein (gemessen: 92.7 % Übereinstimmung, Mittel über fünf Datensätze).
+im Baumkern (Varianz- statt Gini-Kriterium für die Split-Suche) weitgehend überein (gemessen: 92.7 % Übereinstimmung, Mittel über fünf Datensätze).
 
 Implementiert in `gb_tree.py` (Baumkern, aus cart-demo übernommen, plus `set_leaf_values`), `gb_algorithm.py` (Verlustfunktionen, Fit, Vorhersage), `gb_evaluation.py` (Analyse, Rundenkurve,
 Lernrate-Rundenzahl-, Ausreißer- und Teilstichproben-Experimente).
