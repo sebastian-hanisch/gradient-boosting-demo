@@ -23,6 +23,7 @@ from gb_presets import (
     init_session_state_defaults,
     load_permalink_settings,
     randomize_seed,
+    seed_widget,
     sync_query_params,
 )
 from gb_visualization import (
@@ -155,11 +156,13 @@ with st.sidebar:
     n = st.slider("Lieferungen", *bounds("n_slider"), key="n_slider", step=100)
     n_noise = st.slider("Rauschmerkmale", *bounds("n_noise_slider"), key="n_noise_slider")
     if task == "class":
+        seed_widget("label_noise_slider")
         label_noise = st.slider("Falsche Etiketten im Training [%]", *bounds("label_noise_slider"), key="label_noise_slider",
                                 help="Anteil vertauschter Trainingsetiketten; der Test bleibt sauber.")
         st.session_state["_label_noise_kept"] = label_noise
         outlier = int(st.session_state.get("_outlier_kept", C.DEFAULT_OUTLIER))
     else:
+        seed_widget("outlier_slider")
         outlier = st.slider("Grobe Ausreißer im Training [%]", *bounds("outlier_slider"), key="outlier_slider",
                             help="Anteil der Trainingszeilen mit einem großen, zufälligen Schock auf die Dauer (60 bis 120 Minuten) - grobe Messfehler oder Sonderfahrten. Der Test bleibt sauber.")
         st.session_state["_outlier_kept"] = outlier
