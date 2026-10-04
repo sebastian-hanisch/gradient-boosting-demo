@@ -13,7 +13,7 @@ die Vorhersage für alle anderen Lieferungen verzerren.
 
 **Einordnung in die Reihe:** AdaBoost (voriges Stück) gewichtet Trainingszeilen nach Fehlklassifikation um – das funktioniert nur für Klassenlabels und implizit nur mit dem exponentiellen Verlust.
 Gradient Boosting verallgemeinert die Idee: jede Runde wächst einen Regressionsbaum auf den **Pseudo-Residuen** (dem negativen Gradienten einer frei wählbaren Verlustfunktion) und trägt danach
-den verlustoptimalen Blattwert nach. AdaBoost wird darin zu einem **Sonderfall** (exponentieller Verlust, Tiefe 1, Lernrate 1).
+den verlustoptimalen Blattwert nach. AdaBoost steht darin als eng verwandter **Sonderfall** (exponentieller Verlust, Tiefe 1, Lernrate 1; Blattwert je Blatt statt je Baum, anderer Baumkern - siehe unten).
 
 ```
 CART → Bagging → Random Forest → Extra Trees   (Bagging-Ast, fertig)
@@ -46,7 +46,7 @@ CART → AdaBoost → Gradient Boosting (dieses Stück) → { XGBoost, LightGBM,
 - **Baumkern** (`gb_tree.py`, wortgleich aus cart-demo übernommen): Regressionsbäume mit Varianz-Kriterium – dieselbe Mathematik, ob die äußere Aufgabe Klassifikation oder Regression ist,
   da jede Runde auf den (immer numerischen) Pseudo-Residuen wächst. Eine neue Funktion `set_leaf_values` ersetzt nach dem Wachsen die Blattwerte durch den verlustoptimalen Wert.
 - **Verlustfunktionen** (`gb_algorithm.py`): Regression – quadratisch (Mittelwert), absolut (Median), Huber (robuste Lageschätzung, Delta = 0,9-Quantil der Residuen, je Runde neu);
-  Klassifikation – Log-Loss (Newton-Schritt), exponentiell (geschlossene Lösung = AdaBoosts Stimmgewichtsformel).
+  Klassifikation – Log-Loss (Newton-Schritt), exponentiell (geschlossene Lösung von der Form der AdaBoost-Stimmgewichtsformel, je Blatt).
 - **Fit:** Startwert (Mittel/Median bzw. (halbe) Log-Odds der Basisrate), je Runde Pseudo-Residuen ausrechnen, Baum wachsen, Blattwerte nachtragen, mit Lernrate skaliert addieren; optional
   eine zufällige Teilstichprobe der Zeilen je Runde (*stochastic gradient boosting*).
 

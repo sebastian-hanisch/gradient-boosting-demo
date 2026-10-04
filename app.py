@@ -3,7 +3,7 @@ Sebastian Hanisch - Operations Research und Machine Learning
 
 Anders als die Fall-Demos im Portfolio (ein Anwendungsfall, mehrere Verfahren im Vergleich) zeigt diese Demo EIN Verfahren - Gradient Boosting - und lässt stattdessen das Beispiel wachsen.
 Sechstes Stück der Baumbasierten Linie der "Konzepte"-Reihe, zweites Stück des Boosting-Asts (nach AdaBoost): AdaBoost gewichtet Zeilen nach Fehlklassifikation um, Gradient Boosting wächst
-stattdessen auf dem negativen Gradienten einer WÄHLBAREN Verlustfunktion - AdaBoost wird darin zu einem Sonderfall (exponentieller Verlust).
+stattdessen auf dem negativen Gradienten einer WÄHLBAREN Verlustfunktion - AdaBoost steht darin als eng verwandter Sonderfall (exponentieller Verlust).
 Siehe README für die Einordnung.
 
 Lauffähig mit: streamlit run app.py
@@ -95,7 +95,7 @@ st.markdown(
 **AdaBoost** (voriges Stück) gewichtet Trainingszeilen nach Fehlklassifikation um - das funktioniert nur für Klassenlabels und nur mit dem exponentiellen Verlust, den SAMME implizit benutzt.
 **Gradient Boosting** (Friedman 2001) verallgemeinert die Idee: statt Gewichte anzupassen, wächst jede Runde einen Regressionsbaum auf den **Pseudo-Residuen** - dem negativen Gradienten einer
 frei wählbaren Verlustfunktion an der aktuellen Vorhersage. Für quadratischen Verlust (Regression) sind die Pseudo-Residuen die gewöhnlichen Residuen; für Log-Loss (Klassifikation) sind es
-Wahrscheinlichkeitsfehler; für den exponentiellen Verlust ergibt sich - bis auf die Schrittlänge - wieder AdaBoost. Jeder neue Baum wird mit einer **Lernrate** geschrumpft addiert: $F_m = F_{m-1} + \\eta \\cdot \\text{Baum}_m$.
+Wahrscheinlichkeitsfehler; für den exponentiellen Verlust ergibt sich - bei Tiefe 1 und Lernrate 1 - ein eng mit AdaBoost verwandtes Verfahren (Blattwert von der Form der halben AdaBoost-Stimmgewichtsformel, aber je Blatt). Jeder neue Baum wird mit einer **Lernrate** geschrumpft addiert: $F_m = F_{m-1} + \\eta \\cdot \\text{Baum}_m$.
 """
 )
 st.caption(
@@ -144,7 +144,7 @@ with st.sidebar:
     if st.session_state["loss_select"] not in loss_options:
         st.session_state["loss_select"] = C.DEFAULT_LOSS[task]
     loss = st.selectbox("Verlustfunktion", loss_options, key="loss_select", format_func=lambda k: C.LOSS_LABELS[k],
-                        help="Bestimmt Pseudo-Residuum und optimalen Blattwert jeder Runde. Exponentiell (nur Klassifikation) ist - bei Tiefe 1 und Lernrate 1 - bis auf die Schrittlänge AdaBoost.")
+                        help="Bestimmt Pseudo-Residuum und optimalen Blattwert jeder Runde. Exponentiell (nur Klassifikation) ist - bei Tiefe 1 und Lernrate 1 - eng mit AdaBoost verwandt (Blattwert von der Form der halben AdaBoost-Stimmgewichtsformel, aber je Blatt).")
     depth = st.slider("Tiefe der Bäume", *bounds("depth_slider"), key="depth_slider", help="Tiefe jedes einzelnen Runden-Baums. Höhere Tiefe macht jeden Baum stärker (mehr Wechselwirkungen), aber auch überanpassungsfreudiger.")
     leaf = st.slider("Mindestgröße eines Blatts", *bounds("leaf_slider"), key="leaf_slider")
     n_rounds = st.slider("Zahl der Runden", *bounds("n_rounds_slider"), key="n_rounds_slider", help="Wie viele Bäume nacheinander gewachsen werden.")
