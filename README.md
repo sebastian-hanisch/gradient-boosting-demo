@@ -25,7 +25,7 @@ CART → AdaBoost → Gradient Boosting (dieses Stück) → { XGBoost, LightGBM,
 | **Kreuzprobe mit scikit-learn (quadratischer Verlust)** | ✅ Mit denselben Daten stimmt die Vorhersage **exakt** (Abweichung < 1e-10) mit `GradientBoostingRegressor(loss="squared_error")` überein – deterministischer Ablauf bei `subsample = 1`. |
 | **Kreuzprobe mit scikit-learn (Log-Loss)** | ✅ Ebenfalls **exakt** mit `GradientBoostingClassifier(loss="log_loss")` überein (Wahrscheinlichkeiten und Klassen) – gefundener und behobener Fehler unterwegs: der Newton-Schritt des Blattwerts muss mit der Wahrscheinlichkeit `σ(F)` rechnen, nicht mit dem rohen Score `F`. |
 | Kreuzprobe Huber-Verlust | ⚠️ Nur mit Toleranz nah an `GradientBoostingRegressor(loss="huber")` (mittlere Abweichung < 2 min) – leicht andere Delta-Konvention. |
-| Kreuzprobe exponentieller Verlust | ➖ **Bewusst nicht exakt** gegen `GradientBoostingClassifier(loss="exponential")`: sklearn nutzt dort einen einzelnen Newton-Schritt, diese Demo die geschlossene Lösung (= AdaBoosts Stimmgewichtsformel, halbiert). Stattdessen gegen **adaboost-demo** geprüft: bei Tiefe 1, Lernrate 1 stimmen die Vorhersagen zu **92,7 %** überein (Mittel über fünf Datensätze) – der Rest kommt vom Baumkern (Varianz- statt Gini-Kriterium). |
+| Kreuzprobe exponentieller Verlust | ➖ **Bewusst nicht exakt** gegen `GradientBoostingClassifier(loss="exponential")`: sklearn nutzt dort einen einzelnen Newton-Schritt, diese Demo die geschlossene Lösung (von der Form der halbierten AdaBoost-Stimmgewichtsformel, aber je Blatt statt je Baum). Stattdessen gegen **adaboost-demo** geprüft: bei Tiefe 1, Lernrate 1 stimmen die Vorhersagen zu **92,7 %** überein (Mittel über fünf Datensätze) – der Rest kommt vom Baumkern (Varianz- statt Gini-Kriterium) und davon, dass die Blattwerte je Blatt statt einmal je Baum bestimmt werden. |
 | Ein Schritt gegen 60 Runden | ✅ Ein einzelner (mit Lernrate skalierter) Baum: Testfehler **24,4 %** (Raten: 46,4 %). 60 Runden: **15,6 %**. |
 | **Lernrate × Rundenzahl** (Mittel über fünf Datensätze, 150 Runden) | ✅ Testminimum bei Lernrate **0,1** (13,7 %), nicht an den Rändern (0,02: 15,0 %; 1,0: 17,0 %). Bei Lernrate 0,1 sinkt der Testfehler mit mehr Runden weiter oder bleibt stabil (5 → 300 Runden: 21,8 % → 13,6 %); bei Lernrate 1,0 steigt er nach einem frühen Minimum wieder (10 → 300 Runden: 14,8 % → 16,9 %) – klassische Überanpassung. |
 | **Frühstopp** (Standardeinstellung) | ✅ Der Testfehler erreicht sein Minimum (15,0 %) bei Runde 35 von 60 und bleibt danach nicht weiter besser – Grundlage für das Aufhören anhand eines zurückgehaltenen Testfehlers statt einer festen Rundenzahl. |
@@ -56,7 +56,7 @@ CART → AdaBoost → Gradient Boosting (dieses Stück) → { XGBoost, LightGBM,
   nicht die Wahrscheinlichkeit. Das Ergebnis war ein Modell, das mit sklearn nur zu 67 % übereinstimmte (statt exakt) und systematisch zu selbstsicher war. Nach der Korrektur exakter Abgleich
   (Abweichung < 1e-10).
 - **Exponentieller Verlust bewusst nicht exakt gegen sklearn:** sklearns `GradientBoostingClassifier(loss="exponential")` nutzt für **alle** Verluste denselben generischen Newton-Schritt
-  (`_update_terminal_regions`), auch dort, wo eine geschlossene Lösung existiert. Diese Demo nutzt bewusst die geschlossene Lösung (identisch mit AdaBoosts Alpha-Formel), weil genau das den
+  (`_update_terminal_regions`), auch dort, wo eine geschlossene Lösung existiert. Diese Demo nutzt bewusst die geschlossene Lösung (von der Form der AdaBoost-Alpha-Formel, aber je Blatt), weil genau das den
   Bezug zu AdaBoost zeigen soll – der Vergleich läuft deshalb gegen adaboost-demo, nicht gegen sklearn.
 - **Teilstichprobe zeigt hier keinen klaren Regularisierungseffekt:** mehrere Regime probiert (verschiedene Tiefen, Lernraten, Etiketten-Rauschen) – der Testfehler bewegt sich uneinheitlich
   mit dem Teilstichprobenanteil. Die App zeigt das ehrlich (kein erzwungener "Teilstichprobe hilft"-Claim), nur die Rechenzeit ist ein verlässlicher Hebel.
@@ -101,4 +101,4 @@ venv\Scripts\python -m pytest tests -q
 
 ---
 
-Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning.
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zur Reihe: [Baumbasierte Verfahren: von CART bis CatBoost](https://sebastianhanisch.net/konzepte-baumbasiert.html).

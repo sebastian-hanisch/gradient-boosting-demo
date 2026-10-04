@@ -360,8 +360,8 @@ Update: $F_m(x) = F_{m-1}(x) + \eta \sum_j \gamma_{jm}\,\mathbb 1[x \in R_{jm}]$
 | Log-Loss (Klassifikation) | $y - \sigma(F)$ | $\sum(y-p)\,/\,\sum p(1-p)$ (Newton-Schritt) |
 | Exponentiell (Klassifikation) | $\tilde y\,e^{-\tilde y F}$, $\tilde y=2y-1$ | $\tfrac12\ln\!\big(\sum_{\tilde y=1} e^{-F} \,/\, \sum_{\tilde y=-1} e^{F}\big)$ |
 
-Bei Tiefe 1, Lernrate 1 und exponentiellem Verlust ist der Blattwert exakt die halbe AdaBoost-Stimmgewichtsformel $\alpha_m$ - die Vorhersagen stimmen mit adaboost-demo bis auf einen Unterschied
-im Baumkern (Varianz- statt Gini-Kriterium für die Split-Suche) weitgehend überein (gemessen: 92.7 % Übereinstimmung, Mittel über fünf Datensätze).
+Bei Tiefe 1, Lernrate 1 und exponentiellem Verlust hat der Blattwert dieselbe Form wie die halbe AdaBoost-Stimmgewichtsformel $\alpha_m$ ($\tfrac12\ln$ eines Gewichtsverhältnisses), nur wird er je Blatt statt einmal je Baum
+bestimmt. Die Vorhersagen stimmen mit adaboost-demo deshalb und wegen des anderen Baumkerns (Varianz- statt Gini-Kriterium für die Split-Suche) nur weitgehend überein (gemessen: 92.7 % Übereinstimmung, Mittel über fünf Datensätze).
 
 Implementiert in `gb_tree.py` (Baumkern, aus cart-demo übernommen, plus `set_leaf_values`), `gb_algorithm.py` (Verlustfunktionen, Fit, Vorhersage), `gb_evaluation.py` (Analyse, Rundenkurve,
 Lernrate-Rundenzahl-, Ausreißer- und Teilstichproben-Experimente).
@@ -372,6 +372,6 @@ st.markdown("---")
 
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zur Reihe: [Baumbasierte Verfahren: von CART bis CatBoost](https://sebastianhanisch.net/konzepte-baumbasiert.html)."
 )

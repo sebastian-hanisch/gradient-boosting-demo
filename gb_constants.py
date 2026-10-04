@@ -12,7 +12,6 @@ LOSSES = {"class": ("logloss", "exponential"), "reg": ("squared", "absolute", "h
 LOSS_LABELS = {"squared": "Quadratisch (kleinste Fehlerquadrate)", "absolute": "Absolut (mittlerer Betrag)", "huber": "Huber (quadratisch nahe 0, sonst absolut)",
                "logloss": "Log-Loss (logistisch)", "exponential": "Exponentiell (= AdaBoost)"}
 DEFAULT_LOSS = {"class": "logloss", "reg": "squared"}
-HUBER_DELTA = 1.0                    # in Einheiten der standardisierten Residuen (siehe gb_algorithm._huber_delta)
 
 N_MIN, N_MAX, DEFAULT_N = 400, 3000, 1200
 NOISE_MIN, NOISE_MAX, DEFAULT_NOISE = 0, 8, 3
@@ -49,10 +48,10 @@ PRESETS = {
 }
 PRESET_HELP = {
     "🌳 Standard": "Klassifikation, Log-Loss, 60 Runden Tiefe-2-Bäume, Lernrate 0.1: Trainingsfehler 10.0 %, Testfehler 15.6 % (Raten: 46.4 %). Jede Runde wächst auf den Pseudo-Residuen der vorigen Vorhersage.",
-    "🪓 Ein Schritt (kein Boosting)": "Derselbe Tiefe-1-Baum wie CART, aber als ein einzelner Gradient-Boosting-Schritt (Lernrate 1, keine weiteren Runden): Testfehler 24.4 % - kaum besser als Raten. Erst das Wiederholen über viele Runden macht aus Gradient Boosting etwas Brauchbares.",
+    "🪓 Ein Schritt (kein Boosting)": "Derselbe Tiefe-1-Baum wie CART, aber als ein einzelner Gradient-Boosting-Schritt (Lernrate 1, keine weiteren Runden): Testfehler 24.4 % - zwar deutlich besser als Raten (46.4 %), aber weit schlechter als die 15.6 % des Standards. Erst das Wiederholen über viele Runden macht aus Gradient Boosting etwas Brauchbares.",
     "🚀 Zu große Lernrate": "Lernrate 1.0 statt 0.1, 150 Runden: Trainingsfehler fällt auf 0 %, aber der Testfehler steigt auf 17.8 % (Standard: 15.6 %) - das Modell passt sich zu schnell den einzelnen Zeilen des Trainings an.",
     "🐌 Kleine Lernrate, viele Runden": "Lernrate 0.05, dafür 250 statt 60 Runden: Testfehler 15.0 %, minimal besser als der Standard (15.6 %), bei höherem Rechenaufwand - der klassische Kompromiss aus Friedmans Originalarbeit (kleine Schritte, viele davon).",
-    "⚔️ Exponentiell (= AdaBoost)": "Tiefe-1-Bäume, Lernrate 1, exponentieller Verlust: Testfehler 20.6 %. Mit denselben Einstellungen (Stümpfe, keine Lernraten-Bremse) stimmen die Vorhersagen zu 92.7 % (Mittel über 5 Datensätze) mit adaboost-demo überein - der Rest kommt daher, dass die Bäume hier auf den Pseudo-Residuen wachsen (Varianz-Kriterium) statt gewichtet nach Gini, auch wenn die Blattgewichts-Formel identisch ist.",
+    "⚔️ Exponentiell (= AdaBoost)": "Tiefe-1-Bäume, Lernrate 1, exponentieller Verlust: Testfehler 20.6 %. Mit denselben Einstellungen (Stümpfe, keine Lernraten-Bremse) stimmen die Vorhersagen zu 92.7 % (Mittel über 5 Datensätze) mit adaboost-demo überein - der Rest kommt daher, dass die Bäume hier auf den Pseudo-Residuen wachsen (Varianz-Kriterium) statt gewichtet nach Gini, und die Blattwerte je Blatt statt einmal je Baum (wie ein Stimmgewicht) bestimmt werden.",
     "🛡️ Robuster Verlust bei Ausreißern": "Regression mit 10 % groben Ausreißern im Training: Huber-Verlust erreicht RMSE 10.6 (Quadratisch: 12.3) - er wiegt große Residuen nur linear statt quadratisch. Ohne Ausreißer ist es umgekehrt (siehe Experimente-Abschnitt): dort gewinnt Quadratisch knapp.",
     "🎲 Teilstichprobe": "Nur 40 % der Trainingszeilen je Runde: hier sogar etwas genauer (Testfehler 13.3 % gegen 15.0 % mit allen Zeilen) und schneller gerechnet (0.15 s gegen 0.26 s für 100 Runden) - der Effekt auf die Genauigkeit ist aber uneinheitlich (siehe Experimente-Abschnitt), der auf die Rechenzeit nicht.",
 }
