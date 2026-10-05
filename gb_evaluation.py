@@ -57,6 +57,7 @@ class Analysis:
     baseline: float
     verdict: str
     imp: np.ndarray
+    outlier: int = 0
 
 
 def analyse(task, loss, depth, leaf, n_rounds, lr, subsample, n, n_noise, label_noise, outlier, seed):
@@ -68,7 +69,7 @@ def analyse(task, loss, depth, leaf, n_rounds, lr, subsample, n, n_noise, label_
     train = _metrics(ensemble, Xtr, ytr, task)
     test = _metrics(ensemble, Xte, yte, task)
     baseline = baseline_error(ds, task)
-    a = Analysis(ds, task, loss, depth, leaf, n_rounds, lr, subsample, ensemble, train, test, baseline, "", ensemble_importances(ensemble))
+    a = Analysis(ds, task, loss, depth, leaf, n_rounds, lr, subsample, ensemble, train, test, baseline, "", ensemble_importances(ensemble), int(outlier) if task == "reg" else 0)
     a.verdict = verdict(a)
     return a
 
@@ -91,7 +92,7 @@ def round_rows(a, ks=None):
     ks = ks or sorted(set(np.unique(np.round(np.geomspace(1, a.n_rounds, min(24, a.n_rounds))).astype(int))))
     Xtr, ytr, Xte, yte = S.split(a.ds, a.task)
     if a.task == "reg":
-        ytr = S.add_outliers(ytr, 0, a.ds.seed)
+        ytr = S.add_outliers(ytr, a.outlier, a.ds.seed)                       # derselbe verrauschte Trainingsvektor wie in `analyse`
     rows = []
     for k in ks:
         tr = _primary(_metrics_upto(a.ensemble, Xtr, ytr, a.task, k), a.task)

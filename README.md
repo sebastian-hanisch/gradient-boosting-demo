@@ -68,6 +68,7 @@ CART → AdaBoost → Gradient Boosting (dieses Stück) → { XGBoost, LightGBM,
 `tests/test_algorithm.py` (14 Tests): numerischer Gradienten-Check für alle fünf Verlustfunktionen; **exakter** Abgleich mit `GradientBoostingRegressor`/`GradientBoostingClassifier` für
 quadratischen Verlust und Log-Loss; Toleranz-Abgleich für Huber; die geschlossene Blattwertformel des exponentiellen Verlusts gegen ein Brute-Force-Gitter bestätigt; Übereinstimmung mit
 adaboost-demo (Tiefe 1, Lernrate 1) über fünf Datensätze; Grenzfälle (eine Runde, Mindestblattgröße, Reproduzierbarkeit der Teilstichprobe, mehr Runden verbessern den Trainingsfehler).
+`tests/test_oracle_gradient_boosting.py` (10 Tests) rechnet die Runden mit eigenem Gradienten, eigenem Blattwert und einer Brute-Force-Split-Suche nach (gleichstandsfest, je Verlust) und prüft, dass Trainingskurve und Kennzahl dieselben Zielwerte messen.
 `tests/test_claims.py` (18 Tests) hält **jede Zahl** aus App und README fest. `tests/test_app.py` (26 Tests) prüft die Oberfläche per AppTest (jedes Preset, Aufgaben- und Verlustwechsel,
 Abspielen mit rundenspezifischen Diagramm-Schlüsseln, Permalink, alle drei Experimente).
 

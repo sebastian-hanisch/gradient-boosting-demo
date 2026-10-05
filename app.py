@@ -256,7 +256,7 @@ m3.metric("Testfehler" if task == "class" else "Test-RMSE", _err(task, ev.primar
 m4.metric("Bester Testfehler" if task == "class" else "Bester Test-RMSE", _err(task, best["test"]), delta=f"bei Runde {best['k']}", delta_color="off")
 st.markdown(VERDICT_TEXT[a.verdict])
 if task == "reg" and outlier > 0:
-    st.caption("⚠️ Der Trainingsfehler ist hier gegen die **verrauschten** Trainingswerte gemessen (inklusive der Ausreißer-Schocks) - ein robuster Verlust (Huber, Absolut) ignoriert diese Ausreißer bewusst, "
+    st.caption("⚠️ Der Trainingsfehler (Kennzahl und Kurve) ist hier gegen die **verrauschten** Trainingswerte gemessen (inklusive der Ausreißer-Schocks) - ein robuster Verlust (Huber, Absolut) ignoriert diese Ausreißer bewusst, "
                "daher wirkt der Trainingsfehler höher, obwohl der Testfehler (gegen die sauberen Werte) gut ist.")
 
 st.markdown("**Testfehler gegen die Rundenzahl (Frühstopp)**")
