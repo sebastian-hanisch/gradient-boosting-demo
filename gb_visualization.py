@@ -1,6 +1,7 @@
 """Plotly-Darstellungen: Entscheidungsgrenze/Regressionsfläche des Ensembles, ein einzelner Runden-Baum (Pseudo-Residuen), Fehlerkurve gegen Runden, Lernrate x Rundenzahl, Verlustwahl bei Ausreißern,
 Teilstichprobe, Wichtigkeit. Alle Achsen sind gesperrt (Touch-Scrollen)."""
 
+import math
 import numpy as np
 import plotly.graph_objects as go
 
@@ -10,6 +11,23 @@ import gb_constants as C
 CLASS_SCALE = [[0.0, "#2ca02c"], [0.5, "#f2e394"], [1.0, "#d62728"]]        # pünktlich (grün) -> zu spät (rot)
 REG_SCALE = "Viridis"
 LOSS_COLORS = {"squared": C.COLORS["squared"], "absolute": C.COLORS["absolute"], "huber": C.COLORS["huber"]}
+
+
+def _ref_line(fig, value, text, position, axis, log=True, **line_kwargs):
+    """Referenzlinie mit Beschriftung auf einer logarithmischen Achse: die Linie liegt auf dem Datenwert, die Beschriftung braucht log10 des Werts
+    (add_hline und add_vline setzen beide auf denselben Wert, die Beschriftung sitzt dann falsch und dehnt die Achse); log=False für lineare Achsen."""
+    if log and not value > 0.0:
+        return
+    pos = math.log10(value) if log else value
+    top, left = "top" in position, "left" in position
+    if axis == "y":
+        fig.add_hline(y=value, **line_kwargs)
+        if text:
+            fig.add_annotation(xref="paper", yref="y", x=0 if left else 1, y=pos, text=text, showarrow=False, xanchor="left" if left else "right", yanchor="bottom" if top else "top")
+    else:
+        fig.add_vline(x=value, **line_kwargs)
+        if text:
+            fig.add_annotation(xref="x", yref="paper", x=pos, y=1 if top else 0, text=text, showarrow=False, xanchor="right" if left else "left", yanchor="top" if top else "bottom")
 
 
 def lock_axes(fig, height=None, **layout):
@@ -109,7 +127,7 @@ def build_round_curve(rows, task, baseline, current_k, best_k=None, height=340):
     fig.add_hline(y=baseline, line=dict(color="#888888", dash="dash"), annotation_text="ohne Modell (Raten)", annotation_position="top right")
     fig.add_vline(x=current_k, line=dict(color="#111111", dash="dot"))
     if best_k is not None and best_k != current_k:
-        fig.add_vline(x=best_k, line=dict(color="#2ca02c", dash="dot"), annotation_text="bester Testfehler", annotation_position="bottom left")
+        _ref_line(fig, best_k, "bester Testfehler", "bottom left", "x", log=k[-1] > 30, line=dict(color="#2ca02c", dash="dot"))
     fig.update_xaxes(title="Runden", type="log" if k[-1] > 30 else "linear")
     _error_axis(fig, task)
     return lock_axes(fig, height, legend=dict(orientation="h", y=1.12))
