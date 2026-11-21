@@ -27,7 +27,7 @@ CART → AdaBoost → Gradient Boosting (dieses Stück) → { XGBoost, LightGBM,
 | Kreuzprobe Huber-Verlust | ⚠️ Nur mit Toleranz nah an `GradientBoostingRegressor(loss="huber")` (mittlere Abweichung < 2 min) – leicht andere Delta-Konvention. |
 | Kreuzprobe exponentieller Verlust | ➖ **Bewusst nicht exakt** gegen `GradientBoostingClassifier(loss="exponential")`: sklearn nutzt dort einen einzelnen Newton-Schritt, diese Demo die geschlossene Lösung (von der Form der halbierten AdaBoost-Stimmgewichtsformel, aber je Blatt statt je Baum). Stattdessen gegen **adaboost-demo** geprüft: bei Tiefe 1, Lernrate 1 stimmen die Vorhersagen zu **92,7 %** überein (Mittel über fünf Datensätze) – der Rest kommt vom Baumkern (Varianz- statt Gini-Kriterium) und davon, dass die Blattwerte je Blatt statt einmal je Baum bestimmt werden. |
 | Ein Schritt gegen 60 Runden | ✅ Ein einzelner (mit Lernrate skalierter) Baum: Testfehler **24,4 %** (Raten: 46,4 %). 60 Runden: **15,6 %**. |
-| **Lernrate × Rundenzahl** (Mittel über fünf Datensätze, 150 Runden) | ✅ Testminimum bei Lernrate **0,1** (13,7 %), nicht an den Rändern (0,02: 15,0 %; 1,0: 17,0 %). Bei Lernrate 0,1 sinkt der Testfehler mit mehr Runden weiter oder bleibt stabil (5 → 300 Runden: 21,8 % → 13,6 %); bei Lernrate 1,0 steigt er nach einem frühen Minimum wieder (10 → 300 Runden: 14,8 % → 16,9 %) – klassische Überanpassung. |
+| **Lernrate × Rundenzahl** (Mittel über fünf Datensätze, 150 Runden) | ✅ Testminimum bei Lernrate **0,1** (13,7 %), nicht an den Rändern (0,02: 15,0 %; 1,0: 17,0 %). Bei Lernrate 0,1 sinkt der Testfehler mit mehr Runden weiter oder bleibt stabil (5 → 300 Runden: 21,8 % → 13,6 %); bei Lernrate 1,0 steigt er nach einem frühen Minimum wieder (10 → 300 Runden: 14,8 % → 16,9 %) – klassische Overfitting. |
 | **Frühstopp** (Standardeinstellung) | ✅ Der Testfehler erreicht sein Minimum (15,0 %) bei Runde 35 von 60 und bleibt danach nicht weiter besser – Grundlage für das Aufhören anhand eines zurückgehaltenen Testfehlers statt einer festen Rundenzahl. |
 | **Verlustwahl bei Ausreißern** (Regression, Mittel über fünf Datensätze) | ✅ Ohne Ausreißer liegt Quadratisch knapp vorn (RMSE 9,9 gegen 10,4 bei Huber). Mit 15 % groben Ausreißern im Training dreht es sich: Quadratisch verschlechtert sich am stärksten (9,9 → 12,2), Huber und Absolut bleiben deutlich stabiler (10,4 → 11,8 bzw. 11,4 → 11,5). |
 | **Wirkung der Teilstichprobe** (Mittel über fünf Datensätze) | ⚠️ Rechenzeit sinkt verlässlich, ungefähr proportional zum Anteil. Die Wirkung auf den Testfehler ist dagegen **uneinheitlich** in diesem Datensatz (100 % bis 20 %: 14,3 % bis 15,2 %, keine klare Richtung) – anders als die Lernrate-Rundenzahl-Kompromisslinie kein verlässlicher Regularisierungshebel hier. |
@@ -38,7 +38,7 @@ CART → AdaBoost → Gradient Boosting (dieses Stück) → { XGBoost, LightGBM,
   des Ensembles bis dahin (Entscheidungsgrenze bei Klassifikation, Regressionsfläche bei Regression).
 - **Was das Ensemble gelernt hat:** Trainings- und Testfehler (bzw. RMSE) gegen die Rundenzahl mit dem besten Testpunkt markiert, Wichtigkeit je Merkmal.
 - **Regler:** Aufgabe (Klassifikation | Regression), Verlustfunktion (je Aufgabe passend), Tiefe der Bäume, Mindestblattgröße, Rundenzahl, Lernrate, Teilstichprobe je Runde, Rauschmerkmale,
-  falsche Etiketten (Klassifikation) bzw. grobe Ausreißer (Regression), Lieferungen, Seed.
+  falsche Labels (Klassifikation) bzw. grobe Ausreißer (Regression), Lieferungen, Seed.
 - **Drei Experimente auf Knopfdruck:** Lernrate × Rundenzahl, Verlustwahl bei Ausreißern (nur Regression), Wirkung der Teilstichprobe (Testfehler und Rechenzeit getrennt).
 
 ## Modell und Verfahren
@@ -58,7 +58,7 @@ CART → AdaBoost → Gradient Boosting (dieses Stück) → { XGBoost, LightGBM,
 - **Exponentieller Verlust bewusst nicht exakt gegen sklearn:** sklearns `GradientBoostingClassifier(loss="exponential")` nutzt für **alle** Verluste denselben generischen Newton-Schritt
   (`_update_terminal_regions`), auch dort, wo eine geschlossene Lösung existiert. Diese Demo nutzt bewusst die geschlossene Lösung (von der Form der AdaBoost-Alpha-Formel, aber je Blatt), weil genau das den
   Bezug zu AdaBoost zeigen soll – der Vergleich läuft deshalb gegen adaboost-demo, nicht gegen sklearn.
-- **Teilstichprobe zeigt hier keinen klaren Regularisierungseffekt:** mehrere Regime probiert (verschiedene Tiefen, Lernraten, Etiketten-Rauschen) – der Testfehler bewegt sich uneinheitlich
+- **Teilstichprobe zeigt hier keinen klaren Regularisierungseffekt:** mehrere Regime probiert (verschiedene Tiefen, Lernraten, Labels-Rauschen) – der Testfehler bewegt sich uneinheitlich
   mit dem Teilstichprobenanteil. Die App zeigt das ehrlich (kein erzwungener "Teilstichprobe hilft"-Claim), nur die Rechenzeit ist ein verlässlicher Hebel.
 - **Trainingsfehler bei Ausreißern kann höher als der Testfehler sein:** ein robuster Verlust (Huber, Absolut) ignoriert Ausreißer im Training bewusst – der Trainingsfehler wird gegen die
   **verrauschten** Zielwerte gemessen und bleibt deshalb hoch, obwohl der Testfehler (gegen saubere Werte) gut ist. Die App weist bei aktiven Ausreißern explizit darauf hin.

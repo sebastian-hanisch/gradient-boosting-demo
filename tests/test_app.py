@@ -70,11 +70,11 @@ def test_regression_hides_label_noise_and_shows_outliers_instead():
     at.session_state["task_select"] = "reg"
     at.run()
     labels = {w.label for w in at.sidebar.slider}
-    assert "Grobe Ausreißer im Training [%]" in labels and "Falsche Etiketten im Training [%]" not in labels
+    assert "Grobe Ausreißer im Training [%]" in labels and "Falsche Labels im Training [%]" not in labels
     at.session_state["task_select"] = "class"
     at.run()
     labels = {w.label for w in at.sidebar.slider}
-    assert "Falsche Etiketten im Training [%]" in labels and "Grobe Ausreißer im Training [%]" not in labels
+    assert "Falsche Labels im Training [%]" in labels and "Grobe Ausreißer im Training [%]" not in labels
 
 
 def test_outlier_experiment_only_appears_for_regression():

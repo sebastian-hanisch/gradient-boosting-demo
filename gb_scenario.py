@@ -1,6 +1,6 @@
 """Die Lieferdaten der Demo: eigene, erzeugte Lieferungen mit acht echten Merkmalen (Distanz, Ladegewicht, Stopps, Verkehr, Wetter, Wochentag, Zeitfenster, Fahrerjahre) und einstellbar vielen Rauschmerkmalen ohne Bezug zum Ziel.
 Ziel der Regression ist die Dauer in Minuten, Ziel der Klassifikation "zu spät" (Dauer über der versprochenen Zeit). Die Dauer hat Schwellen und Wechselwirkungen (Stau ab einem Verkehrsindex, der mit der Distanz wächst; schwere Ladung
-verlängert jeden Stopp), damit Bäume etwas zu tun haben. Alle Zufallszahlen kommen aus einem Erzeuger in fester Reihenfolge: spätere Spalten und Etiketten-Rauschen werden zuletzt gezogen, damit sich frühere nie ändern."""
+verlängert jeden Stopp), damit Bäume etwas zu tun haben. Alle Zufallszahlen kommen aus einem Erzeuger in fester Reihenfolge: spätere Spalten und Labels-Rauschen werden zuletzt gezogen, damit sich frühere nie ändern."""
 
 from dataclasses import dataclass
 
@@ -16,8 +16,8 @@ PROMISE_SLACK = 14.0                # Puffer in der versprochenen Zeit (Minuten)
 class Dataset:
     X: np.ndarray                   # (n, 8 + Rauschmerkmale)
     y_reg: np.ndarray               # Dauer in Minuten
-    y_cls: np.ndarray               # 1 = zu spät, so wie es im Training steht (mit etwaigem Etiketten-Rauschen)
-    y_true: np.ndarray              # 1 = zu spät ohne Etiketten-Rauschen
+    y_cls: np.ndarray               # 1 = zu spät, so wie es im Training steht (mit etwaigem Labels-Rauschen)
+    y_true: np.ndarray              # 1 = zu spät ohne Labels-Rauschen
     names: tuple
     train: np.ndarray               # Zeilennummern des Trainingsteils
     test: np.ndarray
@@ -64,7 +64,7 @@ def promised(X):
 
 
 def generate_dataset(n=C.DEFAULT_N, n_noise=C.DEFAULT_NOISE, label_noise=C.DEFAULT_LABEL_NOISE, seed=C.DEFAULT_SEED):
-    """n Lieferungen mit Rauschmerkmalen und (Prozent) falschen Etiketten; feste Aufteilung 70 : 30 in Training und Test."""
+    """n Lieferungen mit Rauschmerkmalen und (Prozent) falschen Labels; feste Aufteilung 70 : 30 in Training und Test."""
     rng = np.random.default_rng([int(seed), 2024])
     n = int(n)
     Xb = _base_columns(n, rng)
@@ -82,7 +82,7 @@ def generate_dataset(n=C.DEFAULT_N, n_noise=C.DEFAULT_NOISE, label_noise=C.DEFAU
 
 
 def split(ds, task):
-    """(X_train, y_train, X_test, y_test) für die Aufgabe. Falsche Etiketten (Regler) gibt es nur im Training; der Test misst gegen die wahren Etiketten."""
+    """(X_train, y_train, X_test, y_test) für die Aufgabe. Falsche Labels (Regler) gibt es nur im Training; der Test misst gegen die wahren Labels."""
     y = ds.y(task)
     y_test = ds.y_true if task == "class" else ds.y_reg
     return ds.X[ds.train], y[ds.train], ds.X[ds.test], y_test[ds.test]

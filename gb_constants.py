@@ -20,8 +20,8 @@ OUTLIER_MIN, OUTLIER_MAX, DEFAULT_OUTLIER = 0, 15, 0          # Prozent grobe Au
 TEST_SHARE = 0.3
 DEFAULT_SEED = 7
 
-OVERFIT_GAP_CLASS = 0.08      # Testfehler minus Trainingsfehler (Klassifikation) ab hier: Überanpassung
-OVERFIT_RATIO_REG = 1.6        # Testfehler / Trainingsfehler (Regression) ab hier: Überanpassung
+OVERFIT_GAP_CLASS = 0.08      # Testfehler minus Trainingsfehler (Klassifikation) ab hier: Overfitting
+OVERFIT_RATIO_REG = 1.6        # Testfehler / Trainingsfehler (Regression) ab hier: Overfitting
 UNDERFIT_SHARE = 0.75          # Testfehler über diesem Anteil des Rate-Fehlers: das Modell ist zu einfach
 
 SWEEP_SEEDS = tuple(range(100000, 100005))

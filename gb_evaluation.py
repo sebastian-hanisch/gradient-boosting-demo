@@ -135,7 +135,7 @@ def lr_grid_rows(task, loss, depth, leaf, n_rounds, n, n_noise, label_noise, see
 
 
 def rounds_grid_rows(task, loss, depth, leaf, lr, n, n_noise, label_noise, seeds=C.SWEEP_SEEDS, grid=ROUNDS_GRID):
-    """Testfehler je Rundenzahl bei fester Lernrate, gemittelt über mehrere Datensätze (zeigt Sättigung bzw. Überanpassung, je nach Lernrate)."""
+    """Testfehler je Rundenzahl bei fester Lernrate, gemittelt über mehrere Datensätze (zeigt Sättigung bzw. Overfitting, je nach Lernrate)."""
     rows = []
     for n_rounds in grid:
         errs = []

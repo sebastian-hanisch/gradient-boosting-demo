@@ -2,7 +2,7 @@
 Pseudo-Residuen (dem negativen Gradienten der gewählten Verlustfunktion), egal ob die äußere Aufgabe Klassifikation oder Regression ist. `gb_algorithm.py` überschreibt danach die Blattwerte jedes Baums mit dem für
 den jeweiligen Verlust optimalen Wert (bei quadratischem Verlust ist das ohnehin schon der Mittelwert, den `grow` liefert - sonst wird er nachträglich ersetzt, siehe `set_leaf_values`).
 
-CART von Grund auf in numpy: gieriges Wachsen mit Split-Suche über alle Schwellen aller Merkmale (Sortieren + kumulative Summen), Gini | Entropie | Varianz, Beschneiden nach Kosten-Komplexität,
+CART von Grund auf in numpy: gieriges Wachsen mit Split-Suche über alle Schwellen aller Merkmale (Sortieren + kumulative Summen), Gini | Entropie | Varianz, Cost-Complexity Pruning,
 Auswertung von Hand (Genauigkeit, AUC, Log-Loss, RMSE, MAE, R²). Bibliotheken kommen nur in den Tests als Gegenprobe vor.
 
 Der Baum liegt in parallelen Feldern; die Knoten sind in Breitenreihenfolge nummeriert (Wurzel = 0, dann Ebene für Ebene). Deshalb ist "der Baum nach den ersten k Splits" einfach der Baum, in dem alle Knoten
@@ -196,7 +196,7 @@ def importances(tree):
     return imp / s if s > 0 else imp
 
 
-# --- Zusammenklappen: Schritt k des Wachsens und Beschneiden -------------------------------------------------------------------------------------
+# --- Zusammenklappen: Schritt k des Wachsens und Pruning -------------------------------------------------------------------------------------
 
 def collapse(tree, leaves):
     """Neuer Baum, in dem die Knoten in `leaves` zu Blättern werden (ihre Nachkommen entfallen); Knotennummern werden lückenlos neu vergeben, die Reihenfolge bleibt."""
@@ -240,7 +240,7 @@ def _subtree_stats(tree, is_leaf):
 
 
 def pruning_path(tree):
-    """Beschneidungspfad nach Kosten-Komplexität. Immer wird der Teilbaum mit dem kleinsten effektiven alpha = (R(t) - R(T_t)) / (|Blätter(T_t)| - 1) zum Blatt gemacht,
+    """Pruning-Pfad nach Cost-Complexity Pruning. Immer wird der Teilbaum mit dem kleinsten effektiven alpha = (R(t) - R(T_t)) / (|Blätter(T_t)| - 1) zum Blatt gemacht,
     dabei ist R die mit n/N gewichtete Unreinheit. Rückgabe: Liste von (alpha, Blätter, Gesamt-Unreinheit der Blätter, geschnittener Knoten); Eintrag 0 ist der volle Baum mit alpha 0.
     Nach jedem Split ändern sich nur die Vorfahren des Knotens; alpha wird nie kleiner als das vorige (wie in scikit-learn)."""
     m = tree.n_nodes
@@ -291,7 +291,7 @@ def prune(tree, alpha, path=None):
 
 
 def prune_to_leaves(tree, max_leaves, path=None):
-    """Der Baum auf dem Beschneidungspfad mit den meisten Blättern, die höchstens `max_leaves` sind (mindestens ein Blatt)."""
+    """Der Baum auf dem Pruning-Pfad mit den meisten Blättern, die höchstens `max_leaves` sind (mindestens ein Blatt)."""
     path = path or pruning_path(tree)
     k = next(i for i, (_, leaves, _, _) in enumerate(path) if leaves <= max_leaves)
     cut = [t for _, _, _, t in path[1:k + 1]]

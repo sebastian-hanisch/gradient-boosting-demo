@@ -43,7 +43,7 @@ st.set_page_config(page_title="Gradient Boosting – Sebastian Hanisch", layout=
 
 VERDICT_TEXT = {
     "stump": "ℹ️ **Nur ein Schritt eingestellt** - das ist die Vorhersage eines einzelnen (mit Lernrate skalierten) Baums, noch kein Boosting.",
-    "overfit": "⚠️ **Überanpassung:** der Testfehler liegt deutlich über dem Trainingsfehler.",
+    "overfit": "⚠️ **Overfitting:** der Testfehler liegt deutlich über dem Trainingsfehler.",
     "underfit": "⚠️ **Unteranpassung:** kaum besser als Raten - mehr Runden, größere Lernrate oder tiefere Bäume könnten helfen.",
     "ok": "✅ **Sieht vernünftig aus:** Training und Test liegen nicht weit auseinander.",
 }
@@ -157,8 +157,8 @@ with st.sidebar:
     n_noise = st.slider("Rauschmerkmale", *bounds("n_noise_slider"), key="n_noise_slider")
     if task == "class":
         seed_widget("label_noise_slider")
-        label_noise = st.slider("Falsche Etiketten im Training [%]", *bounds("label_noise_slider"), key="label_noise_slider",
-                                help="Anteil vertauschter Trainingsetiketten; der Test bleibt sauber.")
+        label_noise = st.slider("Falsche Labels im Training [%]", *bounds("label_noise_slider"), key="label_noise_slider",
+                                help="Anteil vertauschter Trainings-Labels; der Test bleibt sauber.")
         st.session_state["_label_noise_kept"] = label_noise
         outlier = int(st.session_state.get("_outlier_kept", C.DEFAULT_OUTLIER))
     else:
@@ -261,7 +261,7 @@ if task == "reg" and outlier > 0:
 
 st.markdown("**Testfehler gegen die Rundenzahl (Frühstopp)**")
 st.plotly_chart(build_round_curve(rrows, task, a.baseline, n_trees, best["k"]), width="stretch", key="round_chart")
-st.caption(f"Der Trainingsfehler sinkt fast durchgehend; der Testfehler erreicht sein Minimum bei Runde {best['k']} ({_err(task, best['test'])}) und kann danach wieder steigen (Überanpassung) - "
+st.caption(f"Der Trainingsfehler sinkt fast durchgehend; der Testfehler erreicht sein Minimum bei Runde {best['k']} ({_err(task, best['test'])}) und kann danach wieder steigen (Overfitting) - "
            "das ist die Grundlage für Frühstopp: die Rundenzahl anhand eines zurückgehaltenen Testfehlers wählen, statt eine feste Zahl zu erzwingen.")
 
 st.markdown("**Wichtigkeit je Merkmal**")
@@ -285,7 +285,7 @@ if st.session_state.get("lr_on"):
     c2.plotly_chart(build_rounds_curve([("Lernrate 0.1", rgrid_small, "#1f77b4"), ("Lernrate 1.0", rgrid_large, "#d62728")], task), width="stretch", key="rounds_chart")
     lo = min(lgrid, key=lambda r: r["test"])
     st.caption(f"Links: Testfehler bei 150 Runden gegen die Lernrate (Mittel über fünf Datensätze) - Minimum bei Lernrate {lo['lr']}. Rechts: Testfehler gegen die Rundenzahl für zwei Lernraten - bei Lernrate 0.1 "
-               f"sinkt der Testfehler mit mehr Runden weiter (oder bleibt zumindest stabil); bei Lernrate 1.0 steigt er nach wenigen Runden wieder (Überanpassung) - der klassische Kompromiss aus Friedmans Originalarbeit: "
+               f"sinkt der Testfehler mit mehr Runden weiter (oder bleibt zumindest stabil); bei Lernrate 1.0 steigt er nach wenigen Runden wieder (Overfitting) - der klassische Kompromiss aus Friedmans Originalarbeit: "
                "kleine Schritte brauchen mehr Runden, sind aber nicht so schnell überangepasst.")
 
 st.markdown("---")
